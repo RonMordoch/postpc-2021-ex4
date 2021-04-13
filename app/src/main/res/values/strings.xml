@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FindRoots</string>
+    <string name="insert_number_here">Insert number here</string>
+    <string name="calculate_roots">Calculate roots</string>
 </resources>
