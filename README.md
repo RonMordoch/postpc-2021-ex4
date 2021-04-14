@@ -66,3 +66,5 @@ I ensure that all of my work reflects my own abilities and not those of someone 
 Resources used:
 * https://developer.android.com/guide/components/broadcasts
 * https://developer.android.com/guide/topics/ui/notifiers/toasts
+* https://kotlinlang.org/docs/basic-types.html#string-templates
+* https://developer.android.com/training/basics/firstapp/starting-activity#kotlin

@@ -42,6 +42,7 @@ public class CalculateRootsService extends IntentService
         }
         // either prime number or found roots before 20s passed
         broadcast.setAction("found_roots");
+        broadcast.putExtra("original_number", numberToCalculateRootsFor);
         broadcast.putExtra("root1", r1);
         broadcast.putExtra("root2", r2);
         broadcast.putExtra("calculation_time", timePassed / 1000L); // send time passed as seconds

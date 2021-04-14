@@ -21,7 +21,9 @@ public class MainActivity extends AppCompatActivity
 
     private BroadcastReceiver broadcastReceiverForSuccess = null, broadcastReceiverForFail = null;
     boolean isWaitingCalc = false;
-    // TODO: add any other fields to the activity as you want
+    ProgressBar progressBar;
+    EditText editTextUserInput;
+    Button buttonCalculateRoots;
 
 
     @Override
@@ -29,9 +31,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProgressBar progressBar = findViewById(R.id.progressBar);
-        EditText editTextUserInput = findViewById(R.id.editTextInputNumber);
-        Button buttonCalculateRoots = findViewById(R.id.buttonCalculateRoots);
+        progressBar = findViewById(R.id.progressBar);
+        editTextUserInput = findViewById(R.id.editTextInputNumber);
+        buttonCalculateRoots = findViewById(R.id.buttonCalculateRoots);
 
         // set initial UI:
         progressBar.setVisibility(View.GONE); // hide progress
@@ -63,7 +65,6 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(getApplicationContext(), "Please enter a positive integer", Toast.LENGTH_SHORT).show();
                     }
                 }
-                //  todo: check conditions to decide if button should be enabled/disabled (see spec below)
             }
         });
 
@@ -71,15 +72,13 @@ public class MainActivity extends AppCompatActivity
         buttonCalculateRoots.setOnClickListener(v -> {
             Intent intentToOpenService = new Intent(MainActivity.this, CalculateRootsService.class);
             String userInputString = editTextUserInput.getText().toString();
-            // todo: check that `userInputString` is a number. handle bad input. convert `userInputString` to long
-            long userInputLong = Long.parseLong(userInputString); // todo this should be the converted string from the user
+            long userInputLong = Long.parseLong(userInputString);
             intentToOpenService.putExtra("number_for_service", userInputLong);
             startService(intentToOpenService);
             isWaitingCalc = true;
             editTextUserInput.setEnabled(false);
             buttonCalculateRoots.setEnabled(false);
             progressBar.setVisibility(View.VISIBLE);
-            // todo: set views states according to the spec (below)
         });
 
         // register a broadcast-receiver to handle action "found_roots"
@@ -90,13 +89,18 @@ public class MainActivity extends AppCompatActivity
                 if (incomingIntent == null || !incomingIntent.getAction().equals("found_roots"))
                     return;
                 // success finding roots!
-        /*
-         TODO: handle "roots-found" as defined in the spec (below).
-          also:
-           - the service found roots and passed them to you in the `incomingIntent`. extract them.
-           - when creating an intent to open the new-activity, pass the roots as extras to the new-activity intent
-             (see for example how did we pass an extra when starting the calculation-service)
-         */
+                // enable input
+                progressBar.setVisibility(View.GONE);
+                editTextUserInput.setText("");
+                editTextUserInput.setEnabled(true);
+                buttonCalculateRoots.setEnabled(false);
+                // create the new activity intent, pass the required info and open it
+                Intent resultIntent = new Intent(MainActivity.this, ResultActivity.class);
+                resultIntent.putExtra("original_number", incomingIntent.getLongExtra("original_number", 0));
+                resultIntent.putExtra("root1", incomingIntent.getLongExtra("root1", 0));
+                resultIntent.putExtra("root2", incomingIntent.getLongExtra("root2", 0));
+                resultIntent.putExtra("calculation_time", incomingIntent.getLongExtra("calculation_time", 0));
+                startActivity(resultIntent);
             }
         };
         registerReceiver(broadcastReceiverForSuccess, new IntentFilter("found_roots"));
@@ -118,8 +122,8 @@ public class MainActivity extends AppCompatActivity
                 editTextUserInput.setText("");
                 editTextUserInput.setEnabled(true);
                 buttonCalculateRoots.setEnabled(false);
-                String toastMsg = "Calculation aborted after " + Long.toString(intent.getLongExtra("time_until_give_up_seconds", 0)) + " seconds";
-                Toast.makeText(getApplicationContext(),toastMsg, Toast.LENGTH_SHORT).show();
+                String toastMsg = "Calculation aborted after " + intent.getLongExtra("time_until_give_up_seconds", 0) + " seconds";
+                Toast.makeText(getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
             }
         };
         registerReceiver(broadcastReceiverForFail, new IntentFilter("stopped_calculations"));
@@ -145,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState);
         // TODO: load data from bundle and set screen state (see spec below)
     }
+
 }
 
 
