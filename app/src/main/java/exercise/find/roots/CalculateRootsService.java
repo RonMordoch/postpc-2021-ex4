@@ -16,7 +16,7 @@ public class CalculateRootsService extends IntentService
     protected void onHandleIntent(Intent intent) {
         if (intent == null) return;
         long timeStartMs = System.currentTimeMillis();
-        long numberToCalculateRootsFor = intent.getLongExtra("number_for_service", 0);
+        long numberToCalculateRootsFor = intent.getLongExtra(MainActivity.EXTRA_NUM_SERVICE, 0);
         if (numberToCalculateRootsFor <= 0) {
             Log.e("CalculateRootsService", "can't calculate roots for non-positive input" + numberToCalculateRootsFor);
             return;
@@ -27,9 +27,9 @@ public class CalculateRootsService extends IntentService
         for (long i = 2; i < (long) Math.sqrt(numberToCalculateRootsFor); i++) {
             timePassed = System.currentTimeMillis() - timeStartMs;
             if (timePassed >= 20000L) {
-                broadcast.setAction("stopped_calculations");
-                broadcast.putExtra("original_number", numberToCalculateRootsFor);
-                broadcast.putExtra("time_until_give_up_seconds", timePassed / 1000L); // send time passed as seconds
+                broadcast.setAction(MainActivity.EXTRA_FAIL);
+                broadcast.putExtra(MainActivity.EXTRA_NUM_ORIG, numberToCalculateRootsFor);
+                broadcast.putExtra(MainActivity.EXTRA_FAIL_TIME, timePassed / 1000L); // send time passed as seconds
                 sendBroadcast(broadcast);
                 return;
             }
@@ -41,11 +41,11 @@ public class CalculateRootsService extends IntentService
             }
         }
         // either prime number or found roots before 20s passed
-        broadcast.setAction("found_roots");
-        broadcast.putExtra("original_number", numberToCalculateRootsFor);
-        broadcast.putExtra("root1", r1);
-        broadcast.putExtra("root2", r2);
-        broadcast.putExtra("calculation_time", timePassed / 1000L); // send time passed as seconds
+        broadcast.setAction(MainActivity.EXTRA_SUCCESS);
+        broadcast.putExtra(MainActivity.EXTRA_NUM_ORIG, numberToCalculateRootsFor);
+        broadcast.putExtra(MainActivity.EXTRA_ROOT1, r1);
+        broadcast.putExtra(MainActivity.EXTRA_ROOT2, r2);
+        broadcast.putExtra(MainActivity.EXTRA_CALC_TIME, timePassed / 1000L); // send time passed as seconds
         sendBroadcast(broadcast);
 
     /*

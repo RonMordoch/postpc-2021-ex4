@@ -9,10 +9,10 @@ class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
-        val originalNumber = intent.getLongExtra("original_number", 0)
-        val root1 = intent.getLongExtra("root1", 0)
-        val root2 = intent.getLongExtra("root2", 0)
-        val calcTime = intent.getLongExtra("calculation_time", 0)
+        val originalNumber = intent.getLongExtra(MainActivity.EXTRA_NUM_ORIG, 0)
+        val root1 = intent.getLongExtra(MainActivity.EXTRA_ROOT1, 0)
+        val root2 = intent.getLongExtra(MainActivity.EXTRA_ROOT2, 0)
+        val calcTime = intent.getLongExtra(MainActivity.EXTRA_CALC_TIME, 0)
 
         val resultMsg = "$originalNumber=$root1*$root2 \n Calculation time: $calcTime seconds."
         findViewById<TextView>(R.id.resultTextView).apply { text=resultMsg }
