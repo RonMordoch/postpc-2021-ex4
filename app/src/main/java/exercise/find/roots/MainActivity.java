@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
 {
-
     public static final String EXTRA_ROOT1 = "exercise.find.roots.root1",
             EXTRA_ROOT2 = "exercise.find.roots.root2",
             EXTRA_CALC_TIME = "exercise.find.roots.calculation_time",
@@ -35,7 +34,6 @@ public class MainActivity extends AppCompatActivity
     ProgressBar progressBar;
     EditText editTextUserInput;
     Button buttonCalculateRoots;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +53,9 @@ public class MainActivity extends AppCompatActivity
         // set listener on the input written by the keyboard to the edit-text
         editTextUserInput.addTextChangedListener(new TextWatcher()
         {
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             public void afterTextChanged(Editable s) { // text did change
                 setCalcButton();
@@ -111,14 +107,15 @@ public class MainActivity extends AppCompatActivity
             }
         };
         registerReceiver(broadcastReceiverForFail, new IntentFilter(EXTRA_FAIL));
+
     }
 
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         unregisterReceiver(broadcastReceiverForFail);
         unregisterReceiver(broadcastReceiverForSuccess);
+        super.onDestroy();
     }
 
     @Override
@@ -142,7 +139,8 @@ public class MainActivity extends AppCompatActivity
             long number = Long.parseLong(newText);
             // button is enabled if we are not waiting for result and we have valid input
             buttonCalculateRoots.setEnabled(number > 0 && !isWaitingCalc);
-        } catch (NumberFormatException e) {
+        }
+        catch (NumberFormatException e) {
             buttonCalculateRoots.setEnabled(false);
             if (!newText.equals("")) { // don't bombard user with toasts when deleting previous input
                 Toast.makeText(getApplicationContext(), "Please enter a positive integer", Toast.LENGTH_SHORT).show();
