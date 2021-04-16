@@ -18,16 +18,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
 {
-    public static final String EXTRA_ROOT1 = "exercise.find.roots.root1",
-            EXTRA_ROOT2 = "exercise.find.roots.root2",
-            EXTRA_CALC_TIME = "exercise.find.roots.calculation_time",
-            EXTRA_FAIL_TIME = "exercise.find.roots.time_until_give_up_seconds",
-            EXTRA_NUM_ORIG = "exercise.find.roots.original_number",
-            EXTRA_NUM_SERVICE = "exercise.find.roots.number_for_service", // due to exercise instructions
-            EXTRA_SUCCESS = "exercise.find.roots.found_roots",
-            EXTRA_FAIL = "exercise.find.roots.stopped_calculations",
-            EXTRA_EDIT_NUM = "exercise.find.roots.edit_number",
-            EXTRA_IS_WAIT = "exercise.find.roots.is_waiting_calc";
+    public static final String EXTRA_ROOT1 = "root1",
+            EXTRA_ROOT2 = "root2",
+            EXTRA_CALC_TIME = "calculation_time",
+            EXTRA_FAIL_TIME = "time_until_give_up_seconds",
+            EXTRA_NUM_ORIG = "original_number",
+            EXTRA_NUM_SERVICE = "number_for_service", // due to exercise instructions
+            EXTRA_SUCCESS = "found_roots",
+            EXTRA_FAIL = "stopped_calculations",
+            EXTRA_EDIT_NUM = "edit_number",
+            EXTRA_IS_WAIT = "is_waiting_calc";
 
     private BroadcastReceiver broadcastReceiverForSuccess = null, broadcastReceiverForFail = null;
     boolean isWaitingCalc = false;
