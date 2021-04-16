@@ -26,7 +26,9 @@ public class MainActivity extends AppCompatActivity
             EXTRA_NUM_ORIG = "exercise.find.roots.original_number",
             EXTRA_NUM_SERVICE = "exercise.find.roots.number_for_service", // due to exercise instructions
             EXTRA_SUCCESS = "exercise.find.roots.found_roots",
-            EXTRA_FAIL = "exercise.find.roots.stopped_calculations";
+            EXTRA_FAIL = "exercise.find.roots.stopped_calculations",
+            EXTRA_EDIT_NUM = "exercise.find.roots.edit_number",
+            EXTRA_IS_WAIT = "exercise.find.roots.is_waiting_calc";
 
     private BroadcastReceiver broadcastReceiverForSuccess = null, broadcastReceiverForFail = null;
     boolean isWaitingCalc = false;
@@ -60,31 +62,18 @@ public class MainActivity extends AppCompatActivity
             }
 
             public void afterTextChanged(Editable s) { // text did change
-                String newText = editTextUserInput.getText().toString();
-                try {
-                    long number = Long.parseLong(newText);
-                    if (number <= 0 || isWaitingCalc) {
-                        buttonCalculateRoots.setEnabled(false);
-                        return;
-                    }
-                    buttonCalculateRoots.setEnabled(true);
-                } catch (NumberFormatException e) {
-                    buttonCalculateRoots.setEnabled(false);
-                    if (!newText.equals("")) { // don't bombard user with toasts when deleting previous input
-                        Toast.makeText(getApplicationContext(), "Please enter a positive integer", Toast.LENGTH_SHORT).show();
-                    }
-                }
+                setCalcButton();
             }
         });
 
         // set click-listener to the button
         buttonCalculateRoots.setOnClickListener(v -> {
+            disableInput();
             Intent intentToOpenService = new Intent(MainActivity.this, CalculateRootsService.class);
             String userInputString = editTextUserInput.getText().toString();
             long userInputLong = Long.parseLong(userInputString);
             intentToOpenService.putExtra(EXTRA_NUM_SERVICE, userInputLong);
             startService(intentToOpenService);
-            disableInput();
         });
 
         // register a broadcast-receiver to handle action "found_roots"
@@ -96,6 +85,7 @@ public class MainActivity extends AppCompatActivity
                     return;
                 // success finding roots!
                 enableInput();
+
                 // create the new activity intent, pass the required info and open it
                 Intent resultIntent = new Intent(MainActivity.this, ResultActivity.class);
                 resultIntent.putExtra(EXTRA_NUM_ORIG, incomingIntent.getLongExtra(EXTRA_NUM_ORIG, 0));
@@ -107,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         };
         registerReceiver(broadcastReceiverForSuccess, new IntentFilter(EXTRA_SUCCESS));
 
+        // register a broadcast-receiver to handle action "stopped_calculations"
         broadcastReceiverForFail = new BroadcastReceiver()
         {
             @Override
@@ -132,39 +123,50 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putBoolean(EXTRA_IS_WAIT, isWaitingCalc);
+        outState.putString(EXTRA_EDIT_NUM, editTextUserInput.getText().toString());
         super.onSaveInstanceState(outState);
-        outState.putBoolean("isWaitingCalc", isWaitingCalc);
-        outState.putString("originalNum", editTextUserInput.getText().toString());
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        isWaitingCalc = savedInstanceState.getBoolean(EXTRA_IS_WAIT);
+        editTextUserInput.setText(savedInstanceState.getString(EXTRA_EDIT_NUM));
         super.onRestoreInstanceState(savedInstanceState);
-        editTextUserInput.setText(savedInstanceState.getString("originalNum"));
-        isWaitingCalc = savedInstanceState.getBoolean("isWaitingCalc");
-        // TODO: load data from bundle and set screen state (see spec below)
+
     }
 
-    private void enableInput()
-    {
+    private void setCalcButton() {
+        String newText = editTextUserInput.getText().toString();
+        try {
+            long number = Long.parseLong(newText);
+            // button is enabled if we are not waiting for result and we have valid input
+            buttonCalculateRoots.setEnabled(number > 0 && !isWaitingCalc);
+        } catch (NumberFormatException e) {
+            buttonCalculateRoots.setEnabled(false);
+            if (!newText.equals("")) { // don't bombard user with toasts when deleting previous input
+                Toast.makeText(getApplicationContext(), "Please enter a positive integer", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void enableInput() {
+        isWaitingCalc = false;
         progressBar.setVisibility(View.GONE);
-        editTextUserInput.setText("");
         editTextUserInput.setEnabled(true);
-        buttonCalculateRoots.setEnabled(false);
+        setCalcButton();
     }
 
     private void disableInput() {
         isWaitingCalc = true;
+        progressBar.setVisibility(View.VISIBLE);
         editTextUserInput.setEnabled(false);
         buttonCalculateRoots.setEnabled(false);
-        progressBar.setVisibility(View.VISIBLE);
     }
 }
 
 
 /*
-
-TODO:
 the spec is:
 
 upon launch, Activity starts out "clean":

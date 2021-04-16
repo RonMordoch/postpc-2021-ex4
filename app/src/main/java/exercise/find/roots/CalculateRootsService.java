@@ -25,11 +25,11 @@ public class CalculateRootsService extends IntentService
         Intent broadcast = new Intent();
         long r1 = numberToCalculateRootsFor, r2 = 1, timePassed = 0;
         for (long i = 2; i < (long) Math.sqrt(numberToCalculateRootsFor); i++) {
-            timePassed = System.currentTimeMillis() - timeStartMs;
-            if (timePassed >= 20000L) {
+            timePassed = (System.currentTimeMillis() - timeStartMs) / 1000L; // convert from ms to seconds
+            if (timePassed >= 20) {
                 broadcast.setAction(MainActivity.EXTRA_FAIL);
                 broadcast.putExtra(MainActivity.EXTRA_NUM_ORIG, numberToCalculateRootsFor);
-                broadcast.putExtra(MainActivity.EXTRA_FAIL_TIME, timePassed / 1000L); // send time passed as seconds
+                broadcast.putExtra(MainActivity.EXTRA_FAIL_TIME, timePassed);
                 sendBroadcast(broadcast);
                 return;
             }
@@ -45,7 +45,7 @@ public class CalculateRootsService extends IntentService
         broadcast.putExtra(MainActivity.EXTRA_NUM_ORIG, numberToCalculateRootsFor);
         broadcast.putExtra(MainActivity.EXTRA_ROOT1, r1);
         broadcast.putExtra(MainActivity.EXTRA_ROOT2, r2);
-        broadcast.putExtra(MainActivity.EXTRA_CALC_TIME, timePassed / 1000L); // send time passed as seconds
+        broadcast.putExtra(MainActivity.EXTRA_CALC_TIME, timePassed);
         sendBroadcast(broadcast);
 
     /*
