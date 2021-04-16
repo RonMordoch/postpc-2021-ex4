@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity
                     return;
                 // success finding roots!
                 enableInput();
-
                 // create the new activity intent, pass the required info and open it
                 Intent resultIntent = new Intent(MainActivity.this, ResultActivity.class);
                 resultIntent.putExtra(EXTRA_NUM_ORIG, incomingIntent.getLongExtra(EXTRA_NUM_ORIG, 0));

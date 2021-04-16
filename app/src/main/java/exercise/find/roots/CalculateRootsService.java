@@ -7,7 +7,7 @@ import android.util.Log;
 public class CalculateRootsService extends IntentService
 {
 
-
+    private static final long MAX_CALC_TIME = 20L;
     public CalculateRootsService() {
         super("CalculateRootsService");
     }
@@ -26,7 +26,7 @@ public class CalculateRootsService extends IntentService
         long r1 = numberToCalculateRootsFor, r2 = 1, timePassed = 0;
         for (long i = 2; i < (long) Math.sqrt(numberToCalculateRootsFor); i++) {
             timePassed = (System.currentTimeMillis() - timeStartMs) / 1000L; // convert from ms to seconds
-            if (timePassed >= 20) {
+            if (timePassed >= MAX_CALC_TIME) {
                 broadcast.setAction(MainActivity.EXTRA_FAIL);
                 broadcast.putExtra(MainActivity.EXTRA_NUM_ORIG, numberToCalculateRootsFor);
                 broadcast.putExtra(MainActivity.EXTRA_FAIL_TIME, timePassed);
